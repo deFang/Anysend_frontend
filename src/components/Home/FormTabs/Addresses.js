@@ -53,20 +53,22 @@ export default function Addresses() {
       <CSVUpload />
       :
       isPro ?
-      <Textarea id='addresses' type='text' w="100%" rows="8" backgroundColor="#E5E5E5"
+      <Textarea id='addresses' type='text' w={{base:'100%', lg:"688px"}} h='158px' rows="5" backgroundColor="#E5E5E5"
       _placeholder={{color: "gray.500"}} color="black" onChange={handleChange} multiline="true"
       placeholder=
-        '1. 0x1a0b5F2EAde71626D051C29Ef425d9c49dc87Aea, 10, 
-2. 0x1a0b5F2EAde71626D051C29Ef425d9c49dc87Aea, 20,
-3. 0x1a0b5F2EAde71626D051C29Ef425d9c49dc87Aea, 30'
+        '0x83d1480648DdbEE02508c7dbb38a5a4618e525B8, 10
+0x807193B15A15CfE142C89DD7135b9a3055848Dc9, 20
+0x65AC552E3F44f4AE9fbBeef0486ED651129cD7eA, 30
+        '
       />
       :
-      <Textarea id='addresses' type='text' w="100%" rows="8" backgroundColor="#E5E5E5"
+      <Textarea id='addresses' type='text' w={{base:'100%', lg:"688px"}} h='158px' rows="5" backgroundColor="#E5E5E5"
       _placeholder={{color: "gray.500"}} color="black" onChange={handleChange} multiline="true"
       placeholder=
-        '1. 0x1a0b5F2EAde71626D051C29Ef425d9c49dc87Aea, 
-2. 0x1a0b5F2EAde71626D051C29Ef425d9c49dc87Aea
-3. 0x1a0b5F2EAde71626D051C29Ef425d9c49dc87Aea'
+        "0x83d1480648DdbEE02508c7dbb38a5a4618e525B8
+0x807193B15A15CfE142C89DD7135b9a3055848Dc9
+0x65AC552E3F44f4AE9fbBeef0486ED651129cD7eA
+        "
       />
       }
       

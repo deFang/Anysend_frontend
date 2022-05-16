@@ -1,37 +1,45 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import AddressesList from './Confirm/AddressesList';
-import { Center, Box, useColorModeValue, 
+import {
+    Center, Box, useColorModeValue,
     Button, Table, Thead, SimpleGrid,
-    Tr, Th, Heading, TableCaption, VStack, 
-    useToast, chakra, Link
+    Tr, Th, Heading, TableCaption, VStack,
+    useToast, chakra, Link, Container
 } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
 import { ArrowBackIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import { useAuth } from 'contexts/AuthContext';
 import { ethers } from 'ethers';
 
-import multisend_abi from "abi/multisend_abi.json"
+import multisend_abi from "abi/multisendv2_abi.json"
 import erc20_abi from "abi/erc20_abi.json"
 import DonationBox from './Confirm/DonationBox';
 import ApproveSend from './Confirm/ApproveSend';
+import Amounts from "./FormTabs/Amounts";
+import Addresses from "./FormTabs/Addresses";
+import {network} from "../../services/constants";
+import {parseFixed} from "@ethersproject/bignumber";
 
 export default function Confirm() {
 
     const bg = useColorModeValue("#E5E5E5", "gray.800");
+    const MAX = ethers.BigNumber.from('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
     let navigate = useNavigate();
     const toast = useToast()
     const toastID = 'toast'
 
     const [ isLoading, setIsLoading ] = useState()
     const [ isApproved, setIsApproved ] = useState(false)
+    const [ isAllowed, setIsAllowed] = useState(true)
     const [ tokenSymbol, setTokenSymbol ] = useState()
     const [ coinGas, setCoinGas ] = useState()
     const [ contractGas, setContractGas ] = useState()
+    const [ avgGas, setAvgGas ] = useState()
     const [ isSent, setIsSent ] = useState(false)
 
     const { currentAccount, addresses, tokenAddress, amount, isPro, setIsPro, 
         setAmount, setTokenAddress, setAddresses, contractAddr, currentNetwork,
-        setContractAddr, setTabIndex, tabIndex
+        setContractAddr, setTabIndex, tabIndex, isChecked, tokenDecimal
     } = useAuth()
 
     const getTokenSymbol = useCallback(async() => {
@@ -49,21 +57,43 @@ export default function Confirm() {
         }
     }, [tokenAddress])
 
-    const getCoinGasPrice = useCallback(() => {
+    // const getCoinGasPrice = useCallback(() => {
+    //     try {
+    //         const { ethereum } = window; //injected by metamask
+    //         //connect to an ethereum node
+    //         const provider = new ethers.providers.Web3Provider(ethereum);
+    //         provider.getGasPrice().then((currentPrice)=> {
+    //             if(addresses) {
+    //                 setCoinGas(addresses.length*21000*ethers.utils.formatUnits(currentPrice, "gwei"))
+    //                 console.log('gasprice', currentPrice)
+    //             }
+    //         })
+    //
+    //
+    //     } catch(err) {
+    //         console.log(err)
+    //     }
+    // }, [addresses])
+
+
+    const getAllowance = useCallback(async () => {
         try {
             const { ethereum } = window; //injected by metamask
             //connect to an ethereum node
-            const provider = new ethers.providers.Web3Provider(ethereum); 
-            provider.getGasPrice().then((currentPrice)=> {
-                if(addresses) {
-                    setCoinGas(addresses.length*21000*ethers.utils.formatUnits(currentPrice, "gwei"))
-                }
-            })
-            
+            const provider = new ethers.providers.Web3Provider(ethereum);
+            const signer = provider.getSigner();
+            const tokenContract = new ethers.Contract(tokenAddress, erc20_abi, signer);
+            const user = await signer.getAddress()
+            const allowance = await tokenContract.allowance(user, contractAddr)
+            console.log("allowance", allowance)
+            if ( allowance == 0 ) {
+                setIsAllowed(false)
+            }
+
         } catch(err) {
             console.log(err)
         }
-    }, [addresses])
+    }, [tokenAddress, addresses, contractAddr])
 
     const getContractGasPrice = useCallback(async() => {
         try {
@@ -74,7 +104,7 @@ export default function Confirm() {
             const signer = provider.getSigner(); 
             let _currentPrice;
             provider.getGasPrice().then((currentPrice)=> {
-                _currentPrice = ethers.utils.formatUnits(currentPrice, "gwei")
+                _currentPrice = currentPrice
             })
             const multisend_contract = new ethers.Contract(contractAddr, multisend_abi , signer);
             let estimation;
@@ -83,12 +113,12 @@ export default function Confirm() {
                     let _amountArr = []
                     let _addressArr = []
                     for(let i=0; i<addresses.length; i++) {
-                        _amountArr.push(ethers.utils.parseEther(addresses[i][1]))
+                        _amountArr.push(parseFixed(addresses[i][1], tokenDecimal))
+                        // _amountArr.push(ethers.utils.parseEther(addresses[i][1]))
                         _addressArr.push(addresses[i][0])
                     }
                     try {
-                        estimation = await multisend_contract.estimateGas.sendDifferentValue(tokenAddress, _addressArr, _amountArr)
-                        setContractGas(parseInt(estimation["_hex"], 16)*_currentPrice)
+                        estimation = await multisend_contract.estimateGas.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked)
                     } catch(err) {
                         console.log(err)
                     }
@@ -100,47 +130,36 @@ export default function Confirm() {
                         _amountArr.push(ethers.utils.parseEther(addresses[i][1]))
                         _addressArr.push(addresses[i][0])
                     }
-                    estimation = await multisend_contract.estimateGas.ethSendDifferentValue(_addressArr, _amountArr, options)
-                    setContractGas(parseInt(estimation["_hex"], 16)*_currentPrice)
+                    estimation = await multisend_contract.estimateGas.ethSendDifferentValue(_addressArr, _amountArr, isChecked, options)
                 }
             } else {
                 if(tabIndex===1) {
                     try {
-                        estimation = await multisend_contract.estimateGas.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()))
-                        setContractGas(parseInt(estimation["_hex"], 16)*_currentPrice)
+                        estimation = await multisend_contract.estimateGas.sendSameValue(tokenAddress, addresses, parseFixed(amount, tokenDecimal), isChecked)
                     } catch(err) {
                         console.log(err)
                     }
                 } else {
                     const options = {value: ethers.utils.parseEther((amount*addresses.length).toString())}
-                    estimation = await multisend_contract.estimateGas.ethSendSameValue(addresses, ethers.utils.parseEther((amount).toString()), options)
-                    console.log(_currentPrice)
-                    setContractGas(parseInt(estimation["_hex"], 16)*_currentPrice)
+                    estimation = await multisend_contract.estimateGas.ethSendSameValue(addresses, ethers.utils.parseEther((amount).toString()), isChecked, options)
                 }
             }
-            console.log(parseInt(estimation["_hex"], 16))
+            setContractGas(ethers.utils.formatEther(estimation * _currentPrice))
+            setAvgGas(ethers.utils.formatEther(estimation * _currentPrice / addresses.length))
         } catch(err) {
             console.log(err)
         }
-    }, [addresses, amount, contractAddr, tokenAddress, isPro, tabIndex])
+    }, [addresses, amount, contractAddr, tokenAddress, isPro, tabIndex, isApproved, isAllowed])
 
     useEffect(() => {
-        if(currentNetwork === 56 ) {
-            setContractAddr("0x83cC30e1E5f814883B260CE32A2a13D3493E5439")
-        } else if(currentNetwork === 128) {
-            setContractAddr("0xF104c1F8346F6BfF0565106B15e1bC989d10216d");
-        } else if(currentNetwork === 97) {
-            setContractAddr("0x4e7369474301364B6348F0660a87A6D5557e6F9f");
-        } else setContractAddr()
-        if(tabIndex===0) {
-            getCoinGasPrice()
-            getContractGasPrice()
-        }
+        setContractAddr(network[currentNetwork].contract)
         if(tokenAddress) {
             getTokenSymbol()
+            getAllowance()
         }
+        getContractGasPrice()
     }, [currentNetwork, setContractAddr, getTokenSymbol, tokenAddress, 
-        getContractGasPrice, getCoinGasPrice, tabIndex])
+        getContractGasPrice, tabIndex])
 
     const handleBackClick = () => {
         setIsPro(false)
@@ -163,7 +182,7 @@ export default function Confirm() {
             })
             return;
         }
-        if(currentNetwork!==56 && currentNetwork!==128 && currentNetwork!==97) {
+        if(network[currentNetwork] == undefined) {
             toast({
                 toastID,
                 title: 'Incorrect Network detected!',
@@ -202,10 +221,10 @@ export default function Confirm() {
                     _amountArr.push(ethers.utils.parseEther(addresses[i][1]))
                     _addressArr.push(addresses[i][0])
                 }
-                await multisendContract.ethSendDifferentValue(_addressArr, _amountArr, options)
+                await multisendContract.ethSendDifferentValue(_addressArr, _amountArr, isChecked, options)
             } else {
                 const options = {value: ethers.utils.parseEther((amount*addresses.length).toString())}
-                await multisendContract.ethSendSameValue(addresses, ethers.utils.parseEther((amount).toString()), options);
+                await multisendContract.ethSendSameValue(addresses, ethers.utils.parseEther((amount).toString()), isChecked, options);
             }
             setTimeout(() => {
                 setIsSent(true)
@@ -240,7 +259,7 @@ export default function Confirm() {
             })
             return;
         }
-        if(currentNetwork!==56 && currentNetwork!==128 && currentNetwork!==97) {
+        if(network[currentNetwork] == undefined) {
             toast({
                 toastID,
                 title: 'Incorrect Network detected!',
@@ -277,9 +296,19 @@ export default function Confirm() {
                     _amountArr.push(ethers.utils.parseEther(addresses[i][1]))
                     _addressArr.push(addresses[i][0])
                 }
-                await multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr)
+                if (isChecked) {
+                    const options = {value: ethers.utils.parseEther(network[currentNetwork].donationAmount)}
+                    await multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked, options)
+                } else {
+                    await multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked)
+                }
             } else {
-                await multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()));
+                if (isChecked) {
+                    const options = {value: ethers.utils.parseEther(network[currentNetwork].donationAmount)}
+                    await multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()), isChecked, options);
+                } else {
+                    await multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()), isChecked);
+                }
             }
             setTimeout(() => {
                 setIsSent(true)
@@ -314,7 +343,7 @@ export default function Confirm() {
             })
             return;
         }
-        if(currentNetwork!==56 && currentNetwork!==128 && currentNetwork!==97) {
+        if(network[currentNetwork] == undefined) {
             toast({
                 toastID,
                 title: 'Incorrect Network detected!',
@@ -345,7 +374,7 @@ export default function Confirm() {
             //connects with the contract
             const tokenContract = new ethers.Contract(tokenAddress, erc20_abi, signer);
             const _amount = ethers.utils.parseEther((((addresses.length*10*amount)/10).toString()))
-            await tokenContract.approve(contractAddr, _amount);
+            await tokenContract.approve(contractAddr, MAX);
             setTimeout(() => {
                 setIsApproved(true)
             }, 5000);
@@ -365,18 +394,20 @@ export default function Confirm() {
             }, 5000);
         }
     }
-
     return (
-    <Center bg={bg} h="90vh">
-        <Box rounded="xl" shadow="lg" bg={useColorModeValue("white", "gray.700")} p="4" w="80vw">
-            <Button variant="ghost" m="1" leftIcon={<ArrowBackIcon />} onClick={handleBackClick}>
+        <Container maxWidth='100%' minH='calc(100vh - 160px)' bg={bg} centerContent>
+        <Box mt="0" px="24px"  rounded="xl" shadow="lg" bg={useColorModeValue("white", "gray.700")}
+                     w={{base: '80vw', lg: "768px"}} h="748px">
+            <Button variant="ghost"  m="1" leftIcon={<ArrowBackIcon />} onClick={handleBackClick}>
                 Back
             </Button>
-            <Table variant='simple' size="sm">
-                <TableCaption placement='top'>
-                    <Heading as="h2" size="md" color={useColorModeValue("gray.600", "gray.400")}>DETAILS</Heading>
-                </TableCaption>
-                <Thead>
+            <SimpleGrid columns={1} spacingY="16px">
+                <Box>
+                    <Heading as="h2" size="md" my="2" align='center' color={useColorModeValue("gray.600", "gray.400")}>DETAILS</Heading>
+                <Box overflowY="auto" maxHeight="300px">
+                    <Table variant='simple' size="sm">
+
+                <Thead position="sticky" top={0} bg="gray.500">
                     <Tr>
                     <Th>Address</Th>
                     <Th isNumeric>Amount</Th>
@@ -384,8 +415,11 @@ export default function Confirm() {
                 </Thead>
                 <AddressesList />
             </Table>
-            <Center mt="4">
-                <VStack spacing="4">
+                </Box>
+                    </Box>
+                <Box>
+                    <Center mt="4">
+                    <VStack spacing="4">
                     <Heading as="h2" size="md" my="2" color={useColorModeValue("gray.600", "gray.400")}>SUMMARY</Heading>
                     {tokenAddress ?
                     <>
@@ -399,29 +433,45 @@ export default function Confirm() {
                         <ExternalLinkIcon ml="1"/>
                     </chakra.h2>
                     </>
-                    
                     :
                     <></>
                     }
-                    
+
                     <SimpleGrid columns={[1, null, 2]} spacing={4}>
                         <Box rounded="xl" bg='brand.200' height='80px' p="4">
                             Total Number Of Addresses
-                            <Center>{addresses ? addresses.length : ""}</Center>    
+                            <Center>{addresses ? addresses.length : ""}</Center>
                         </Box>
                         <Box rounded="xl" bg='brand.200' height='80px' p="4">
                             <Center>
                             Total Amount to be Sent
                             </Center>
-                            <Center>{isPro 
+                            <Center>{isPro
                                 ? tokenAddress ? amount + " " + tokenSymbol :  amount
-                                : addresses 
+                                : addresses
                                 ? tokenAddress ? (addresses.length*10*amount)/10 + " " + tokenSymbol : (addresses.length*10*amount)/10
                                 : ""}
                             </Center>
                         </Box>
                         {tabIndex === 1 ?
-                        <></>
+                        <>
+                            <Box rounded="xl" bg='brand.200' height='80px' p="4">
+                                <Center>
+                                Est. Total Transaction Cost
+                                </Center>
+                                <Center>
+                                    {contractGas ? contractGas + ' ' + network[currentNetwork].gasToken : "approve first"}
+                                </Center>
+                            </Box>
+                            <Box rounded="xl" bg='brand.200' height='80px' p="4">
+                                <Center>
+                                Avg. Cost Per Address
+                                </Center>
+                                <Center>
+                                    {avgGas ? avgGas + ' ' + network[currentNetwork].gasToken : "approve first"}
+                                </Center>
+                            </Box>
+                        </>
                         :
                         <>
                             <Box rounded="xl" bg='brand.200' height='80px' p="4">
@@ -429,24 +479,29 @@ export default function Confirm() {
                                 Est. Total Transaction Cost
                                 </Center>
                                 <Center>
-                                    { contractGas } gwei 
+                                    {contractGas ? contractGas + ' ' + network[currentNetwork].gasToken : "approve first"}
                                 </Center>
                             </Box>
                             <Box rounded="xl" bg='brand.200' height='80px' p="4">
                                 <Center>
-                                Cost Decreased By
+                                Avg. Cost Per Address
                                 </Center>
                                 <Center>
-                                    {contractGas ? Math.round(((coinGas-contractGas)/coinGas)*100)+" %" : ""}
+                                    {avgGas ? avgGas + ' ' + network[currentNetwork].gasToken : "approve first"}
                                 </Center>
                             </Box>
                         </>
                         }
-                        
                     </SimpleGrid>
+
+                </VStack>
+            </Center>
+                </Box>
+                <Box display="flex" justifyContent={'center'} py="16px">
                     <DonationBox />
-                    {tokenAddress ?
-                    isApproved ?
+                </Box>
+                <Box align={'center'}>
+                    {tokenAddress ? isAllowed ?
                     <Button bg="brand.100" color="white"
                     size="md"
                     _hover={{
@@ -457,17 +512,28 @@ export default function Confirm() {
                     >
                         SEND
                     </Button>
-                    :
-                    <Button bg="brand.100" color="white"
-                    size="md"
-                    _hover={{
-                        backgroundColor: "brand.200"
-                    }}
-                    onClick={approveTx}
-                    isLoading={isLoading}
-                    >
-                        SEND
-                    </Button>
+                    : (isApproved === false ?
+                        <Button bg="brand.100" color="white"
+                        size="md"
+                        _hover={{
+                            backgroundColor: "brand.200"
+                        }}
+                        onClick={approveTx}
+                        isLoading={isLoading}
+                        >
+                            APPROVE
+                        </Button>
+                        :
+                        <Button bg="brand.100" color="white"
+                        size="md"
+                        _hover={{
+                            backgroundColor: "brand.200"
+                        }}
+                        onClick={sendTokenTx}
+                        isLoading={isLoading}
+                        >
+                            SEND
+                        </Button>)
                     :
                     <Button bg="brand.100" color="white"
                     size="md"
@@ -481,13 +547,13 @@ export default function Confirm() {
                         SEND
                     </Button>
                     }
-                    {tabIndex === 1 ?
+                    {tabIndex === 1 && isAllowed === false ?
                     <ApproveSend isApproved={isApproved} isSent={isSent}/>
                     :
                     <></>}
-                </VStack>
-            </Center>
+                </Box>
+            </SimpleGrid>
         </Box>
-    </Center>
+        </Container>
   )
 }

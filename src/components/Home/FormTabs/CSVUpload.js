@@ -25,7 +25,7 @@ const styles = {
     borderRadius: 10,
     display: 'flex',
     flexDirection: 'column',
-    height: '100%',
+    height: '158px',
     justifyContent: 'center',
     padding: 20,
     cursor: "pointer",

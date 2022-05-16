@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import Home from "views/Home";
 
 import { useAuth } from "contexts/AuthContext";
+import {network} from "./services/constants";
 
 function App() {
-
   const { setCurrentAccount, setCurrentNetwork, 
     currentNetwork, setContractAddr
   } = useAuth()

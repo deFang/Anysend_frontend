@@ -1,5 +1,5 @@
 export default function convertStringAddrToArr(_addr) {
-    let _arr = _addr.split(",")
+    let _arr = _addr.split("\n")
     for(let i=0; i<_arr.length; i++) {
         _arr[i] = _arr[i].trim()
     }

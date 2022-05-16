@@ -1,34 +1,34 @@
 import React from "react";
 import ToggleTheme from "utils/ToggleTheme";
-
 import {
   chakra, Box, Flex, useColorModeValue,
   HStack, useDisclosure, VStack,
   IconButton, CloseButton, Image, Alert,
   AlertIcon, AlertTitle, AlertDescription,
+  Container
 } from "@chakra-ui/react";
 
-import { HamburgerIcon} from "@chakra-ui/icons"
+import { HamburgerIcon } from "@chakra-ui/icons"
 import Logo from "assets/logo.png";
 import LoginButton from "./LoginButton";
 
 import { useAuth } from "contexts/AuthContext";
+import {network} from "../services/constants";
 
 export default function Navbar() {
   const bg = useColorModeValue("#E5E5E5", "gray.800");
   const mobileNav = useDisclosure();
 
   const { currentNetwork } = useAuth()
-
   return (
-    <React.Fragment >
-      {currentNetwork === 56 || currentNetwork ===97 || currentNetwork === 128 
+      <>
+      {network[currentNetwork]
       ?
       <></>
       :
       <Alert status='warning' justifyContent='center'>
         <AlertIcon />
-        <AlertTitle mr={2}>Current Network not supported!</AlertTitle> 
+        <AlertTitle mr={2}>Current Network not supported!</AlertTitle>
         <AlertDescription>Please switch to supported networks.</AlertDescription>
       </Alert>
       }
@@ -104,6 +104,6 @@ export default function Navbar() {
           </HStack>
         </Flex>
       </chakra.header>
-    </React.Fragment>
+      </>
   );
 }

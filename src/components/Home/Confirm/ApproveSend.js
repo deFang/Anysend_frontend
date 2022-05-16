@@ -1,36 +1,46 @@
 import React from 'react'
-import { Box, Circle, HStack } from '@chakra-ui/react'
-import { CheckIcon } from '@chakra-ui/icons';
+import { Box, Circle, HStack, Center } from '@chakra-ui/react'
+import { CheckIcon, MinusIcon } from '@chakra-ui/icons';
 
 export default function ApproveSend(props) {
 
     const { isApproved, isSent } = props;
+    console.log('isApproved', isApproved)
+    console.log('isSent', isSent)
 
     return (
-    <>
-    <HStack>
-        { isApproved ?
-        <Circle p="2" bg="brand.200" w="20px" h="20px">
-            <CheckIcon />
-        </Circle>
-        :
-        <Circle p="2" bg="brand.200" w="20px" h="20px">
-            1
-        </Circle>
-        }
-        <Box>Approve</Box>
-        <Box>----------</Box>
-        { isSent ?
-        <Circle p="2" bg="brand.200" w="20px" h="20px">
-            <CheckIcon />
-        </Circle>
-        :
-        <Circle p="2" bg="brand.200" w="20px" h="20px">
-            2
-        </Circle>
-        }
-        <Box>Send</Box>
-    </HStack>
-    </>
+    <Center>
+        <HStack  spacing='24px' p={'16px'}>
+            <HStack display="flex" alignItems="center" spacing={1} w={'80px'}>
+                { isApproved ?
+                <Circle p="2" bg="brand.200" w="24px" h="24px">
+                    <CheckIcon />
+                </Circle>
+                :
+                <Circle p="2" bg="brand.200" w="24px" h="24px">
+                    1
+                </Circle>
+                }
+                <Box >Approve</Box>
+            </HStack>
+            <HStack display="flex" alignItems="center" spacing={0} w={'40px'}>
+                <MinusIcon />
+                <MinusIcon />
+                <MinusIcon />
+            </HStack>
+            <HStack display="flex" alignItems="center" spacing={1} w={'80px'}>
+            { isSent ?
+            <Circle p="2" bg="brand.200" w="24px" h="24px">
+                <CheckIcon />
+            </Circle>
+            :
+            <Circle p="2" bg="brand.200" w="24px" h="24px">
+                2
+            </Circle>
+            }
+            <Box>Send</Box>
+            </HStack>
+        </HStack>
+    </Center>
     )
 }

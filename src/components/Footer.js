@@ -3,6 +3,7 @@ import {
     Text, useColorModeValue, VisuallyHidden,
     Flex, Image, Divider
   } from '@chakra-ui/react';
+import { SimpleGrid } from '@chakra-ui/react'
 import { FaInstagram, FaTwitter, FaYoutube, FaDiscord, FaTelegramPlane } from 'react-icons/fa';
 import Logo from "assets/logo.png";
 
@@ -37,19 +38,14 @@ const SocialButton = ({
 export default function Footer() {
   return (
     <Box
-      bg={useColorModeValue('#E5E5E5', 'gray.800')}
-      color={useColorModeValue('gray.700', 'gray.200')}>
+      bg={useColorModeValue('light_background', 'dark_background')}
+      color={useColorModeValue('gray.700', 'gray.200')}
+      minH="80px"
+      >
       <Divider />
-      <Container
-        as={Stack}
-        maxW={'6xl'}
-        py={4}
-        direction={{ base: 'column', md: 'row' }}
-        spacing={4}
-        justify={{ base: 'center', md: 'space-between' }}
-        align={{ base: 'center', md: 'center' }}>
-        
-        <Flex>
+      <SimpleGrid columns={3} spacing={10} py='16px' px='16px'>
+        <Box >
+          <Flex justify={'left'}>
           <chakra.a
             href="/"
             title="Navbar"
@@ -62,8 +58,12 @@ export default function Footer() {
             </chakra.h1>
           </chakra.a>
         </Flex>
-        <Text>© 2022 One Click. All rights reserved</Text>
-        <Stack direction={'row'} spacing={6}>
+        </Box>
+        <Box align={'center'}>
+          <Text>© 2022 One Click. All rights reserved</Text>
+        </Box>
+        <Box align={'center'}>
+          <Stack direction={'row'} spacing={6} justify={'right'}>
           <SocialButton label={'Twitter'} href={'#'}>
             <FaTwitter />
           </SocialButton>
@@ -80,7 +80,8 @@ export default function Footer() {
             <FaTelegramPlane />
           </SocialButton>
         </Stack>
-      </Container>
+        </Box>
+      </SimpleGrid>
     </Box>
   );
 }

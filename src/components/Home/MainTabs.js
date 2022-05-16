@@ -3,24 +3,28 @@ import Amounts from './FormTabs/Amounts';
 import Addresses from './FormTabs/Addresses';
 import Token from './FormTabs/Token';
 import SupportedNetworks from './SupportedNetworks';
-
-import { Tabs, TabList, TabPanels, Tab, TabPanel, Center, Box, useColorModeValue, 
-    Button, Switch, FormControl, FormLabel, Tooltip, Grid, GridItem, useToast 
+import {
+    Tabs, TabList, TabPanels, Tab, TabPanel, Center, Box, useColorModeValue,
+    Button, Switch, FormControl, FormLabel, Tooltip, Grid, GridItem, useToast
 } from '@chakra-ui/react'
-import { useNavigate } from "react-router-dom";
-import { InfoOutlineIcon } from '@chakra-ui/icons';
-import { useAuth } from 'contexts/AuthContext';
+import {Container} from '@chakra-ui/react'
+import {SimpleGrid} from '@chakra-ui/react'
+import {useNavigate} from "react-router-dom";
+import {InfoOutlineIcon} from '@chakra-ui/icons';
+import {useAuth} from 'contexts/AuthContext';
 
 import convertStringAddrToArr from 'utils/convertStringAddrToArr';
 import convertStringAmountAddrToArr from 'utils/convertStringAmountAddrToArr';
+import {network} from "../../services/constants";
 
 export default function MainTabs() {
 
-    const bg = useColorModeValue("#E5E5E5", "gray.800");
+    const bg = useColorModeValue('light_background', 'dark_background');
     let navigate = useNavigate();
     const toast = useToast()
 
-    const { amount, tokenAddress, addresses, setAddresses, 
+    const {
+        amount, tokenAddress, addresses, setAddresses,
         currentAccount, isPro, setIsPro, tabIndex, setTabIndex,
         currentNetwork
     } = useAuth()
@@ -30,7 +34,7 @@ export default function MainTabs() {
     }
 
     const confirm = () => {
-        if(!currentAccount) {
+        if (!currentAccount) {
             toast({
                 title: 'No Account Found!',
                 description: "Please connect with your wallet.",
@@ -41,7 +45,7 @@ export default function MainTabs() {
             return;
         }
 
-        if(!isPro && !amount) {
+        if (!isPro && !amount) {
             toast({
                 title: 'No Amount detected',
                 description: "Please add correct amount.",
@@ -52,7 +56,7 @@ export default function MainTabs() {
             return;
         }
 
-        if(!isPro && amount <= 0 ) {
+        if (!isPro && amount <= 0) {
             toast({
                 title: 'Incorrect Amount detected',
                 description: "Amount can't be negative.",
@@ -62,8 +66,8 @@ export default function MainTabs() {
             })
             return;
         }
-        
-        if(tabIndex === 1 && tokenAddress.length!==42) {
+
+        if (tabIndex === 1 && tokenAddress.length !== 42) {
             toast({
                 title: 'Incorrect Token Address detected',
                 description: "Please enter correct address",
@@ -73,8 +77,8 @@ export default function MainTabs() {
             })
             return;
         }
-        
-        if(!addresses || addresses.length===0) {
+
+        if (!addresses || addresses.length === 0) {
             toast({
                 title: 'Incorrect Addresses detected!',
                 description: "Please enter correct addresses.",
@@ -85,15 +89,15 @@ export default function MainTabs() {
             return;
         }
 
-        if(!isPro && typeof(addresses)==="string") {
+        if (!isPro && typeof (addresses) === "string") {
             setAddresses(convertStringAddrToArr(addresses))
         }
 
-        if(isPro && typeof(addresses)==="string") {
+        if (isPro && typeof (addresses) === "string") {
             setAddresses(convertStringAmountAddrToArr(addresses))
         }
-        
-        if(currentNetwork !== 56 && currentNetwork !==97 && currentNetwork !== 128) {
+
+        if (network[currentNetwork] == undefined) {
             toast({
                 title: 'Unsupported Network detected!',
                 description: "Please switch to supported network.",
@@ -104,7 +108,7 @@ export default function MainTabs() {
             return;
         }
 
-        navigate("/confirm", { replace: false })
+        navigate("/confirm", {replace: false})
     }
 
     const handleTabChange = index => {
@@ -112,72 +116,94 @@ export default function MainTabs() {
     }
 
     return (
-    <>
-    <Center bg={bg} h="90vh">
-        <Box mt="-20" px="2" pb="4" rounded="xl" shadow="lg" bg={useColorModeValue("white", "gray.700")} w={{base:'90vw', md:"60vw"}} h="80vh">
-            <Tabs isFitted variant='unstyled' onChange={(index) => handleTabChange(index)}>
-            <Grid templateColumns='repeat(5, 1fr)' gap={4}>
-                <GridItem colSpan={4}>
-                    <TabList  mx={4} mt="8" p={2} bg="brand.300" rounded="xl" w={{base:"92.5%", md:"60%"}} color="black">
-                    <Tab _selected={{ color: 'black', bg: 'brand.200' }} 
-                        _focus={{ outline: "none" }} rounded="lg">
-                        Send {
-                        currentNetwork === 56 || currentNetwork ===97 ? "BNB"
-                        :  
-                        currentNetwork === 128 ? "HT"
-                        :
-                        currentNetwork === 1
-                        ? "ETH" : ""}
-                    </Tab>
-                    <Tab _selected={{ color: 'black', bg: 'brand.200' }}
-                        _focus={{ outline: "none" }} rounded="lg">
-                        Send Tokens
-                    </Tab>
-                    </TabList>
-                </GridItem>
-                <GridItem colSpan={1}>
-                    <FormControl display='flex' alignItems='flex-end' justifyContent='flex-end' mt="8" pr="4">
-                    <FormLabel htmlFor='pro' mb='0'>
-                        PRO
-                        <Tooltip label='In Pro Mode, you can set different amounts of token to be sent to each address' 
-                        fontSize='sm' rounded="md">
-                            <InfoOutlineIcon ml="2"/>
-                        </Tooltip>
-                    </FormLabel>
-                    <Switch id='pro' onChange={changePro}/>
-                    </FormControl>
-                </GridItem>
-            </Grid>
-            <TabPanels>
-                <TabPanel>
-                    { isPro
-                    ? <></>
-                    : <Amounts />}
-                    <Addresses />
-                </TabPanel>
-                <TabPanel>
-                    <Token />
-                    { isPro
-                    ? <></>
-                    : <Amounts />}
-                    <Addresses />
-                </TabPanel>
-            </TabPanels>
-            </Tabs>
-            <Center>
-                <Button bg="brand.100" color="white" 
-                size="md"
-                _hover={{
-                    backgroundColor: "brand.200"
-                }}
-                onClick={confirm}
-                >
-                    NEXT
-                </Button>
-            </Center>
-        </Box>
-    </Center>
-    <SupportedNetworks />
-    </>
-  )
+        <>
+            <Container maxW='100%' minH='calc(100vh - 160px)' bg={bg} centerContent>
+            <Container centerContent m="16px">
+                <Box mt="0" px="24px"  rounded="xl" shadow="lg" bg={useColorModeValue("white", "gray.700")}
+                     w={{base: '80vw', lg: "768px"}} h="748px">
+                    <Tabs isFitted variant='unstyled' onChange={(index) => handleTabChange(index)}>
+                        <Grid templateColumns='repeat(5, 1fr)' gap={4}>
+                            <GridItem colSpan={4}>
+                                <TabList mx={4} mt="8" p={2} bg="brand.300" rounded="xl" w={{base: "92.5%", lg: "60%"}}
+                                         color="black">
+                                    <Tab _selected={{color: 'black', bg: 'brand.200'}}
+                                         _focus={{outline: "none"}} rounded="lg">
+                                        Send {network[currentNetwork] == undefined ? "ETH" : network[currentNetwork].gasToken}
+                                    </Tab>
+                                    <Tab _selected={{color: 'black', bg: 'brand.200'}}
+                                         _focus={{outline: "none"}} rounded="lg">
+                                        Send Tokens
+                                    </Tab>
+                                </TabList>
+                            </GridItem>
+                            <GridItem colSpan={1} display='flex' alignItems='center'>
+                                <FormControl display='flex' alignItems='flex-end' justifyContent='flex-end' mt="8"
+                                             pr="4">
+                                    <FormLabel htmlFor='pro' mb='0'>
+                                        PRO
+                                        <Tooltip
+                                            label='In Pro Mode, you can set different amounts for each address'
+                                            fontSize='sm' rounded="md">
+                                            <InfoOutlineIcon ml="2"/>
+                                        </Tooltip>
+                                    </FormLabel>
+                                    <Switch id='pro' onChange={changePro}/>
+                                </FormControl>
+                            </GridItem>
+                        </Grid>
+                        <TabPanels>
+                            <TabPanel>
+                                <SimpleGrid columns={1} spacingY="16px">
+                                    <Box>
+                                    </Box>
+                                    <Box>
+                                        {isPro
+                                            ? <></>
+                                            : <Amounts/>}
+                                    </Box>
+                                    <Box>
+                                        <Addresses/>
+                                    </Box>
+                                </SimpleGrid>
+                            </TabPanel>
+                            <TabPanel>
+                                <SimpleGrid columns={1} spacingY="16px">
+                                    <Box>
+                                        <Token/>
+                                    </Box>
+                                    <Box>
+                                        {isPro
+                                            ? <></>
+                                            : <Amounts/>
+                                        }
+                                    </Box>
+                                    <Box>
+                                        <Addresses/>
+                                    </Box>
+                                </SimpleGrid>
+                            </TabPanel>
+                        </TabPanels>
+                    </Tabs>
+                    <Box my='16px'>
+                        <Center>
+                            <Button bg="brand.100" color="white"
+                                    size="lg"
+                                    width='344px'
+                                    height='58px'
+                                    _hover={{
+                                        backgroundColor: "brand.200"
+                                    }}
+                                    onClick={confirm}
+                            >
+                                NEXT
+                            </Button>
+                        </Center>
+                    </Box>
+                </Box>
+                {/*</Center>*/}
+            </Container>
+            <SupportedNetworks/>
+            </Container>
+        </>
+    )
 }
