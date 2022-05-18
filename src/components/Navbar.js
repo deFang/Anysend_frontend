@@ -5,11 +5,12 @@ import {
   HStack, useDisclosure, VStack,
   IconButton, CloseButton, Image, Alert,
   AlertIcon, AlertTitle, AlertDescription,
-  Container
+  Container, Text
 } from "@chakra-ui/react";
 
 import { HamburgerIcon } from "@chakra-ui/icons"
 import Logo from "assets/logo.png";
+import Logotext from "assets/logo-text.png"
 import LoginButton from "./LoginButton";
 
 import { useAuth } from "contexts/AuthContext";
@@ -48,8 +49,8 @@ export default function Navbar() {
               alignItems="center"
             >
               <Image src={Logo} h="30px"/>
-              <chakra.h1 fontSize="xl" fontWeight="medium" ml="2">
-                One Click
+              <chakra.h1 color='#7ba8f9' fontSize="xl" fontWeight="bold" ml="2">
+                ANY<chakra.a color='#2561ed'>SEND</chakra.a>
               </chakra.h1>
             </chakra.a>
           </Flex>

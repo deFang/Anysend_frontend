@@ -4,8 +4,9 @@ import {
     Flex, Image, Divider
   } from '@chakra-ui/react';
 import { SimpleGrid } from '@chakra-ui/react'
-import { FaInstagram, FaTwitter, FaYoutube, FaDiscord, FaTelegramPlane } from 'react-icons/fa';
+import { FaInstagram, FaTwitter, FaYoutube, FaDiscord, FaTelegramPlane, FaGithub } from 'react-icons/fa';
 import Logo from "assets/logo.png";
+import React from "react";
 
   
 const SocialButton = ({
@@ -53,30 +54,30 @@ export default function Footer() {
             alignItems="center"
           >
             <Image src={Logo} h="30px"/>
-            <chakra.h1 fontSize="xl" fontWeight="medium" ml="2">
-              One Click
+            <chakra.h1 color='#7ba8f9' fontSize="xl" fontWeight="bold" ml="2">
+                ANY<chakra.a color='#2561ed'>SEND</chakra.a>
             </chakra.h1>
           </chakra.a>
         </Flex>
         </Box>
         <Box align={'center'}>
-          <Text>© 2022 One Click. All rights reserved</Text>
+          <Text>© 2022 AnySend. All rights reserved</Text>
         </Box>
         <Box align={'center'}>
           <Stack direction={'row'} spacing={6} justify={'right'}>
-          <SocialButton label={'Twitter'} href={'#'}>
+          <SocialButton label={'Twitter'} href={'https://twitter.com/anysend_pro'}>
             <FaTwitter />
           </SocialButton>
-          <SocialButton label={'YouTube'} href={'#'}>
-            <FaYoutube />
+          <SocialButton label={'Github'} href={'https://github.com/Anysender'}>
+            <FaGithub />
           </SocialButton>
-          <SocialButton label={'Instagram'} href={'#'}>
-            <FaInstagram />
-          </SocialButton>
-          <SocialButton label={'Discord'} href={'#'}>
+          {/*<SocialButton label={'Instagram'} href={'#'}>*/}
+          {/*  <FaInstagram />*/}
+          {/*</SocialButton>*/}
+          <SocialButton label={'Discord'} href={'https://discord.gg/xmKww5zAXw'}>
             <FaDiscord />
           </SocialButton>
-          <SocialButton label={'Telegram'} href={'#'}>
+          <SocialButton label={'Telegram'} href={'https://t.me/anysend_pro'}>
             <FaTelegramPlane />
           </SocialButton>
         </Stack>

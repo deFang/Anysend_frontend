@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import { ArrowBackIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import { useAuth } from 'contexts/AuthContext';
 import { ethers } from 'ethers';
-
 import multisend_abi from "abi/multisendv2_abi.json"
 import erc20_abi from "abi/erc20_abi.json"
 import DonationBox from './Confirm/DonationBox';
