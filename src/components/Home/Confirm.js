@@ -116,7 +116,6 @@ export default function Confirm() {
             if ( allowance == 0 ) {
                 setIsAllowed(false)
             }
-
         } catch(err) {
             console.log(err)
         }
@@ -145,7 +144,9 @@ export default function Confirm() {
                         _addressArr.push(addresses[i][0])
                     }
                     try {
+                        console.log('pro tab=1', tokenAddress, _addressArr, _amountArr, isChecked)
                         estimation = await multisend_contract.estimateGas.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked)
+                        console.log('est', estimation)
                     } catch(err) {
                         console.log(err)
                     }
@@ -172,9 +173,11 @@ export default function Confirm() {
                 }
             }
             setContractGas(ethers.utils.formatEther(estimation * _currentPrice))
-            setAvgGas(ethers.utils.formatEther(estimation * _currentPrice / addresses.length))
+            setAvgGas(ethers.utils.formatEther(parseInt(estimation * _currentPrice / addresses.length)))
         } catch(err) {
             console.log(err)
+            setContractGas("-")
+            setAvgGas("-")
         }
     }, [addresses, amount, contractAddr, tokenAddress, isPro, tabIndex, isApproved, isAllowed])
 
@@ -187,6 +190,8 @@ export default function Confirm() {
         getContractGasPrice()
     }, [currentNetwork, setContractAddr, getTokenSymbol, tokenAddress, 
         getContractGasPrice, tabIndex])
+
+
 
     const handleBackClick = () => {
         setIsPro(false)
@@ -535,8 +540,8 @@ export default function Confirm() {
                     {tokenAddress ? isAllowed ?
                     <Button bg="brand.100" color="white"
                     size="lg"
-                    width='344px'
-                    height='58px'
+                    width="344px"
+                    height="58px"
                     _hover={{
                         backgroundColor: "brand.200"
                     }}
@@ -548,8 +553,8 @@ export default function Confirm() {
                     : (isApproved === false ?
                         <Button bg="brand.100" color="white"
                         size="lg"
-                        width='344px'
-                        height='58px'
+                        width="344px"
+                        height="58px"
                         _hover={{
                             backgroundColor: "brand.200"
                         }}
@@ -561,8 +566,8 @@ export default function Confirm() {
                         :
                         <Button bg="brand.100" color="white"
                         size="lg"
-                        width='344px'
-                        height='58px'
+                        width="344px"
+                        height="58px"
                         _hover={{
                             backgroundColor: "brand.200"
                         }}
@@ -574,8 +579,8 @@ export default function Confirm() {
                     :
                     <Button bg="brand.100" color="white"
                     size="lg"
-                    width='344px'
-                    height='58px'
+                    width="344px"
+                    height="58px"
                     _hover={{
                         backgroundColor: "brand.200"
                     }}

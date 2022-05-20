@@ -11,7 +11,7 @@ import {formatFixed} from "@ethersproject/bignumber";
 export default function Token() {
 
   const { currentAccount, currentNetwork,
-      setTokenAddress, setTokenName, setTokenBalance, setTokenDecimal } = useAuth();
+      tokenAddress, setTokenAddress, setTokenName, setTokenBalance, setTokenDecimal } = useAuth();
 
     const getBalance = async(tokenAddress) => {
         if(!currentAccount) return;
@@ -21,8 +21,7 @@ export default function Token() {
           const provider = new ethers.providers.Web3Provider(ethereum);
           //gets the account
           const signer = provider.getSigner();
-          console.log('tokenAddress', tokenAddress)
-          if (tokenAddress) {
+          if (tokenAddress && tokenAddress != '') {
              const tokenContract = new ethers.Contract(tokenAddress, erc20_abi, signer);
              const user = await signer.getAddress()
              setTokenName(await tokenContract.symbol())
@@ -54,7 +53,7 @@ export default function Token() {
           </Badge>
         </FormLabel>
         <InputGroup>
-        <Input id='token' _placeholder={{color: "gray.500"}} onChange={handleChange}  color="black"
+        <Input id='token' _placeholder={{color: "gray.500"}} onChange={handleChange}  value={tokenAddress} color="black"
         type='email' w='100%' h='60px' backgroundColor="#E5E5E5" placeholder='0xA0c68C638235ee32657e8f720a23ceC1bFc77C77'/>
         </InputGroup>
     </FormControl>

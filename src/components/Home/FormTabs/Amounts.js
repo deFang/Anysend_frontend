@@ -11,7 +11,7 @@ import erc20_abi from "../../../abi/erc20_abi.json";
 
 export default function Amounts() {
 
-  const { currentAccount, setAmount, balance, 
+  const { currentAccount, amount, setAmount, balance,
     setBalance, tabIndex, currentNetwork,
     tokenAddress, tokenName, tokenBalance
    } = useAuth();
@@ -51,7 +51,7 @@ export default function Amounts() {
     <FormControl mt="4" mb="4">
         <FormLabel htmlFor='amount'>Amount per Address</FormLabel>
         <InputGroup>
-          <Input id='amount' _placeholder={{color: "gray.500"}} onChange={handleChange}
+          <Input id='amount' _placeholder={{color: "gray.500"}} onChange={handleChange} value={amount}
           type='number' color="black" w={{base:'100%', lg:"288px"}} h='60px' backgroundColor="#E5E5E5" placeholder='1.0' isRequired/>
           {tabIndex === 0 ?
           <InputRightAddon h='60px' children={network[currentNetwork] == undefined ? "ETH" : network[currentNetwork].gasToken} />

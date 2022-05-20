@@ -5,9 +5,9 @@ import { Button, Image, useColorModeValue, useToast, /*Menu, Box,
 import { checkIfWalletIsConnected, connectWallet } from 'services/walletConnections';
 import { useAuth } from 'contexts/AuthContext';
 //import { ChevronDownIcon } from '@chakra-ui/icons';
-import BNBLogo from "assets/bnb-logo.svg"
-import ETHLogo from "assets/eth-logo.svg"
-import HECOLogo from "assets/heco-logo.png"
+import BNBLogo from "assets/chain/bnb-logo.svg"
+import ETHLogo from "assets/chain/eth-logo.svg"
+import HECOLogo from "assets/chain/heco-logo.png"
 
 export default function LoginButton() {
 

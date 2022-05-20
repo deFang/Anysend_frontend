@@ -24,13 +24,15 @@ export default function MainTabs() {
     const toast = useToast()
 
     const {
-        amount, tokenAddress, addresses, setAddresses,
+        amount, setAmount, tokenAddress, setTokenAddress, addresses, setAddresses,
         currentAccount, isPro, setIsPro, tabIndex, setTabIndex,
         currentNetwork
     } = useAuth()
 
     const changePro = () => {
         setIsPro(!isPro)
+        setTokenAddress("")
+        setAddresses("")
     }
 
     const confirm = () => {
@@ -113,6 +115,7 @@ export default function MainTabs() {
 
     const handleTabChange = index => {
         setTabIndex(index)
+        setAmount("")
     }
 
     return (

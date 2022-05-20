@@ -2,6 +2,8 @@ import React, { useEffect } from 'react'
 import { useAuth } from 'contexts/AuthContext';
 import { Tbody, Tr,Td 
 } from '@chakra-ui/react'
+import {ethers} from "ethers";
+import {formatFixed, parseFixed} from "@ethersproject/bignumber";
 
 export default function AddressesList() {
     const { isPro, amount, addresses, setAmount } = useAuth()
@@ -10,9 +12,9 @@ export default function AddressesList() {
         if(!isConnected && isPro) {
             let _amount = 0;
             for(let i=0; i<addresses.length; i++) {
-                _amount+=parseFloat(addresses[i][1]);
+                _amount += parseFixed(addresses[i][1], 18).toNumber();
             }
-            setAmount(_amount)
+            setAmount(formatFixed(_amount, 18))
         }
     
         return () => {

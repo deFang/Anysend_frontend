@@ -10,8 +10,8 @@ export function AuthProvider({ children }) {
 
     const [ currentAccount, setCurrentAccount] = useState()
     const [ currentNetwork, setCurrentNetwork ] = useState()
-    const [ amount, setAmount ] = useState()
-    const [ tokenAddress, setTokenAddress ] = useState()
+    const [ amount, setAmount ] = useState("")
+    const [ tokenAddress, setTokenAddress ] = useState("")
     const [ tokenName, setTokenName ] = useState()
     const [ addresses, setAddresses] = useState()
     const [ isUpload, setIsUpload ] = useState(false)
