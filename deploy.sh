@@ -1,18 +1,18 @@
 #!/bin/bash
 # echo PUBLIC_URL=https://cdn.jsdelivr.net/gh/deri-protocol/app@main > .env.production
 yarn build --nomaps
-repo=./publish
+repo=./anysend_deployment
 # rm -rf $repo
 
 if [ ! -d $repo ]; then
   printf '\e[1;34m%-6s\e[m\n' "app repo is not exit ,clone it from git@github.com:deri-protocol/deri.fi.git"
-  git clone git@github.com:Anysender/anysend_deployment.git $repo -b main
+  git clone git@github.com:Anysender/anysend_deployment.git $repo -b master
 fi
 
 
 printf '\e[1;34m%-6s\e[m\n' 'git checkout main branch and fetch '
-git -C $repo checkout main
-git -C $repo pull origin main
+git -C $repo checkout master
+git -C $repo pull origin master
 
 printf '\e[1;34m%-6s\e[m\n' 'backup current version'
 cp $repo/index.html $repo/index.bak.html
@@ -28,7 +28,7 @@ if [ "$1" != "silence" ]; then
   case $input in
       [yY][eE][sS]|[yY])
   printf '\e[1;34m%-6s\e[m\n' "git push origin main"
-  git -C $repo push origin main
+  git -C $repo push origin master
   exit
   ;;
       [nN][oO]|[nN])
@@ -41,5 +41,5 @@ if [ "$1" != "silence" ]; then
   ;;
   esac
 else
-  git -C $repo push origin main
+  git -C $repo push origin master
 fi

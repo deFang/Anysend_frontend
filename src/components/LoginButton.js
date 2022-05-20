@@ -4,10 +4,18 @@ import { Button, Image, useColorModeValue, useToast, /*Menu, Box,
 } from '@chakra-ui/react';
 import { checkIfWalletIsConnected, connectWallet } from 'services/walletConnections';
 import { useAuth } from 'contexts/AuthContext';
-//import { ChevronDownIcon } from '@chakra-ui/icons';
 import BNBLogo from "assets/chain/bnb-logo.svg"
 import ETHLogo from "assets/chain/eth-logo.svg"
 import HECOLogo from "assets/chain/heco-logo.png"
+import ArbitrumLogo from "assets/chain/arbitrum.png"
+import AuroraLogo from "assets/chain/aurora.png"
+import AvalancheLogo from "assets/chain/avalanche.png"
+import FantomLogo from "assets/chain/fantom.png"
+import HarmonyLogo from "assets/chain/harmony.png"
+import MoonbeamLogo from "assets/chain/moonbeam.png"
+import OptimismLogo from "assets/chain/optimism.png"
+import PolygonLogo from "assets/chain/polygon.png"
+import { network } from "../services/constants"
 
 export default function LoginButton() {
 
@@ -51,18 +59,35 @@ export default function LoginButton() {
     }
     getAccount()
     }, [setCurrentAccount, toast]);
-
   return (
           <>
-          { currentAccount ? 
+          { currentAccount && currentNetwork ?
           <Button bg={bg} size="lg">
             <Image src={
-              currentNetwork === 56 || currentNetwork ===97 ? BNBLogo 
-              :  
-              currentNetwork === 128 ? HECOLogo
+              network[currentNetwork] != undefined ? (
+              network[currentNetwork].network === 'Ropsten' || network[currentNetwork].network === 'Kovan' || network[currentNetwork].network === 'Ethereum' ? ETHLogo
               :
-              currentNetwork === 1
-              ? ETHLogo : ""} h="15px" mr="2"/>
+              network[currentNetwork].gasToken=== 'BNB' ? BNBLogo
+              :
+              network[currentNetwork].gasToken=== 'HT' ? HECOLogo
+              :
+              network[currentNetwork].network=== 'Arbitrum Rinkeby' || network[currentNetwork].network=== 'Arbitrum' ? ArbitrumLogo
+              :
+              network[currentNetwork].network=== 'Optimism' ? OptimismLogo
+              :
+              network[currentNetwork].network=== 'Polygon' ? PolygonLogo
+              :
+              network[currentNetwork].network=== 'Aurora' ? AuroraLogo
+              :
+              network[currentNetwork].network=== 'Fantom' ? FantomLogo
+              :
+              network[currentNetwork].network=== 'Moonbeam' ? MoonbeamLogo
+              :
+              network[currentNetwork].network=== 'Harmony' ? HarmonyLogo
+              :
+              network[currentNetwork].network=== 'Avalanche' ? AvalancheLogo
+              : ETHLogo) : ETHLogo
+            } h="15px" mr="2"/>
             {currentAccount.substring(0, 5)+"...."+currentAccount.substring(currentAccount.length-6)}
           </Button>
           /*

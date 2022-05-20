@@ -2,7 +2,6 @@ import {Checkbox} from "@chakra-ui/react";
 import React from "react";
 
 
-
 export const network = {
     3: {
         network: "Ropsten",
