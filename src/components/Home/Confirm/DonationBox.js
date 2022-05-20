@@ -15,7 +15,7 @@ export default function DonationBox() {
                 :
                 network[currentNetwork].donation
             }
-            to OneClick
+            to AnySend
         </Checkbox>
   )
 }

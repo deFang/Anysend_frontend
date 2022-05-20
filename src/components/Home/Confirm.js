@@ -41,6 +41,34 @@ export default function Confirm() {
         setContractAddr, setTabIndex, tabIndex, isChecked, tokenDecimal
     } = useAuth()
 
+
+
+    const getTransactionReceipt = (promise) => {
+        promise.then((tx) => {
+            console.log('tx', tx)
+            toast({
+                toastID,
+                title: 'Transaction Executed',
+                description: "The transation is successfully executed",
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            })
+        })
+            .catch((err) => {
+                console.log('err', err)
+                toast({
+                    toastID,
+                    title: 'Transaction Failed',
+                    description: err.message || err.stack,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                })
+            })
+    }
+
+
     const getTokenSymbol = useCallback(async() => {
         try {
             const { ethereum } = window; //injected by metamask
@@ -220,10 +248,11 @@ export default function Confirm() {
                     _amountArr.push(ethers.utils.parseEther(addresses[i][1]))
                     _addressArr.push(addresses[i][0])
                 }
-                await multisendContract.ethSendDifferentValue(_addressArr, _amountArr, isChecked, options)
+                getTransactionReceipt(multisendContract.ethSendDifferentValue(_addressArr, _amountArr, isChecked, options))
             } else {
                 const options = {value: ethers.utils.parseEther((amount*addresses.length).toString())}
-                await multisendContract.ethSendSameValue(addresses, ethers.utils.parseEther((amount).toString()), isChecked, options);
+                getTransactionReceipt(multisendContract.ethSendSameValue(addresses, ethers.utils.parseEther((amount).toString()), isChecked, options))
+                // await multisendContract.ethSendSameValue(addresses, ethers.utils.parseEther((amount).toString()), isChecked, options);
             }
             setTimeout(() => {
                 setIsSent(true)
@@ -288,6 +317,8 @@ export default function Confirm() {
             const signer = provider.getSigner(); 
             //connects with the contract
             const multisendContract = new ethers.Contract(contractAddr, multisend_abi, signer);
+
+
             if(isPro) {
                 let _amountArr = []
                 let _addressArr = []
@@ -297,16 +328,16 @@ export default function Confirm() {
                 }
                 if (isChecked) {
                     const options = {value: ethers.utils.parseEther(network[currentNetwork].donationAmount)}
-                    await multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked, options)
+                    getTransactionReceipt(multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked, options))
                 } else {
-                    await multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked)
+                    getTransactionReceipt(multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked))
                 }
             } else {
                 if (isChecked) {
                     const options = {value: ethers.utils.parseEther(network[currentNetwork].donationAmount)}
-                    await multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()), isChecked, options);
+                    getTransactionReceipt(multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()), isChecked, options))
                 } else {
-                    await multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()), isChecked);
+                    getTransactionReceipt(multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()), isChecked))
                 }
             }
             setTimeout(() => {
@@ -326,6 +357,7 @@ export default function Confirm() {
             setTimeout(() => {
                 setIsLoading(false)
             }, 5000);
+
         }
     }
 
@@ -373,7 +405,7 @@ export default function Confirm() {
             //connects with the contract
             const tokenContract = new ethers.Contract(tokenAddress, erc20_abi, signer);
             const _amount = ethers.utils.parseEther((((addresses.length*10*amount)/10).toString()))
-            await tokenContract.approve(contractAddr, MAX);
+            getTransactionReceipt(tokenContract.approve(contractAddr, MAX))
             setTimeout(() => {
                 setIsApproved(true)
             }, 5000);
@@ -502,7 +534,9 @@ export default function Confirm() {
                 <Box align={'center'}>
                     {tokenAddress ? isAllowed ?
                     <Button bg="brand.100" color="white"
-                    size="md"
+                    size="lg"
+                    width='344px'
+                    height='58px'
                     _hover={{
                         backgroundColor: "brand.200"
                     }}
@@ -513,7 +547,9 @@ export default function Confirm() {
                     </Button>
                     : (isApproved === false ?
                         <Button bg="brand.100" color="white"
-                        size="md"
+                        size="lg"
+                        width='344px'
+                        height='58px'
                         _hover={{
                             backgroundColor: "brand.200"
                         }}
@@ -524,7 +560,9 @@ export default function Confirm() {
                         </Button>
                         :
                         <Button bg="brand.100" color="white"
-                        size="md"
+                        size="lg"
+                        width='344px'
+                        height='58px'
                         _hover={{
                             backgroundColor: "brand.200"
                         }}
@@ -535,7 +573,9 @@ export default function Confirm() {
                         </Button>)
                     :
                     <Button bg="brand.100" color="white"
-                    size="md"
+                    size="lg"
+                    width='344px'
+                    height='58px'
                     _hover={{
                         backgroundColor: "brand.200"
                     }}
