@@ -3,6 +3,7 @@ import Amounts from './FormTabs/Amounts';
 import Addresses from './FormTabs/Addresses';
 import Token from './FormTabs/Token';
 import SupportedNetworks from './SupportedNetworks';
+import FAQs from './FAQs';
 import {
     Tabs, TabList, TabPanels, Tab, TabPanel, Center, Box, useColorModeValue,
     Button, Switch, FormControl, FormLabel, Tooltip, Grid, GridItem, useToast
@@ -21,7 +22,9 @@ export default function MainTabs() {
 
     const bg = useColorModeValue('light_background', 'dark_background');
     let navigate = useNavigate();
-    const toast = useToast()
+    const toast = useToast({
+         position: 'top'
+    })
 
     const {
         amount, setAmount, tokenAddress, setTokenAddress, addresses, setAddresses,
@@ -123,7 +126,7 @@ export default function MainTabs() {
             <Container maxW='100%' minH='calc(100vh - 160px)' bg={bg} centerContent>
             <Container centerContent m="16px">
                 <Box mt="0" px="24px"  rounded="xl" shadow="lg" bg={useColorModeValue("white", "gray.700")}
-                     w={{base: '80vw', lg: "768px"}} h="748px">
+                     w={{base: '80vw', lg: "768px"}} h="800px">
                     <Tabs isFitted variant='unstyled' onChange={(index) => handleTabChange(index)}>
                         <Grid templateColumns='repeat(5, 1fr)' gap={4}>
                             <GridItem colSpan={4}>
@@ -206,6 +209,7 @@ export default function MainTabs() {
                 {/*</Center>*/}
             </Container>
             <SupportedNetworks/>
+            <FAQs/>
             </Container>
         </>
     )

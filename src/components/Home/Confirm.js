@@ -24,14 +24,15 @@ export default function Confirm() {
     const bg = useColorModeValue("#E5E5E5", "gray.800");
     const MAX = ethers.BigNumber.from('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
     let navigate = useNavigate();
-    const toast = useToast()
+    const toast = useToast({
+         position: 'top'
+    })
     const toastID = 'toast'
 
     const [ isLoading, setIsLoading ] = useState()
     const [ isApproved, setIsApproved ] = useState(false)
     const [ isAllowed, setIsAllowed] = useState(true)
     const [ tokenSymbol, setTokenSymbol ] = useState()
-    const [ coinGas, setCoinGas ] = useState()
     const [ contractGas, setContractGas ] = useState()
     const [ avgGas, setAvgGas ] = useState()
     const [ isSent, setIsSent ] = useState(false)
@@ -43,29 +44,55 @@ export default function Confirm() {
 
 
 
-    const getTransactionReceipt = (promise) => {
-        promise.then((tx) => {
+    const getTransactionReceipt = async (tx) => {
+        try{
+            await tx.wait()
             console.log('tx', tx)
             toast({
                 toastID,
                 title: 'Transaction Executed',
-                description: "The transation is successfully executed",
+                description: "The transaction is successfully executed",
                 status: 'success',
                 duration: 3000,
                 isClosable: true,
             })
-        })
-            .catch((err) => {
-                console.log('err', err)
-                toast({
-                    toastID,
-                    title: 'Transaction Failed',
-                    description: err.message || err.stack,
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true,
-                })
+        } catch(error) {
+            console.log('err', error)
+            toast({
+                toastID,
+                title: 'Transaction Failed',
+                description: error.message || error.stack,
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
             })
+        }
+    }
+
+    const getApproveReceipt = async (tx) => {
+        try{
+            await tx.wait()
+            console.log('tx', tx)
+            setIsApproved(true)
+            toast({
+                toastID,
+                title: 'Approve Executed',
+                description: "The transaction is successfully executed",
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            })
+        } catch(error) {
+            console.log('err', error)
+            toast({
+                toastID,
+                title: 'Transaction Failed',
+                description: error.message || error.stack,
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            })
+        }
     }
 
 
@@ -84,23 +111,6 @@ export default function Confirm() {
         }
     }, [tokenAddress])
 
-    // const getCoinGasPrice = useCallback(() => {
-    //     try {
-    //         const { ethereum } = window; //injected by metamask
-    //         //connect to an ethereum node
-    //         const provider = new ethers.providers.Web3Provider(ethereum);
-    //         provider.getGasPrice().then((currentPrice)=> {
-    //             if(addresses) {
-    //                 setCoinGas(addresses.length*21000*ethers.utils.formatUnits(currentPrice, "gwei"))
-    //                 console.log('gasprice', currentPrice)
-    //             }
-    //         })
-    //
-    //
-    //     } catch(err) {
-    //         console.log(err)
-    //     }
-    // }, [addresses])
 
 
     const getAllowance = useCallback(async () => {
@@ -176,8 +186,8 @@ export default function Confirm() {
             setAvgGas(ethers.utils.formatEther(parseInt(estimation * _currentPrice / addresses.length)))
         } catch(err) {
             console.log(err)
-            setContractGas("-")
-            setAvgGas("-")
+            // setContractGas("-")
+            // setAvgGas("-")
         }
     }, [addresses, amount, contractAddr, tokenAddress, isPro, tabIndex, isApproved, isAllowed])
 
@@ -253,10 +263,10 @@ export default function Confirm() {
                     _amountArr.push(ethers.utils.parseEther(addresses[i][1]))
                     _addressArr.push(addresses[i][0])
                 }
-                getTransactionReceipt(multisendContract.ethSendDifferentValue(_addressArr, _amountArr, isChecked, options))
+                getTransactionReceipt(await multisendContract.ethSendDifferentValue(_addressArr, _amountArr, isChecked, options))
             } else {
                 const options = {value: ethers.utils.parseEther((amount*addresses.length).toString())}
-                getTransactionReceipt(multisendContract.ethSendSameValue(addresses, ethers.utils.parseEther((amount).toString()), isChecked, options))
+                getTransactionReceipt(await multisendContract.ethSendSameValue(addresses, ethers.utils.parseEther((amount).toString()), isChecked, options))
                 // await multisendContract.ethSendSameValue(addresses, ethers.utils.parseEther((amount).toString()), isChecked, options);
             }
             setTimeout(() => {
@@ -272,6 +282,14 @@ export default function Confirm() {
             })
         } catch(err) {
             console.log(err)
+            toast({
+                toastID,
+                title: 'Error',
+                description: err.data.message,
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            })
         } finally {
             setTimeout(() => {
                 setIsLoading(false)
@@ -333,16 +351,16 @@ export default function Confirm() {
                 }
                 if (isChecked) {
                     const options = {value: ethers.utils.parseEther(network[currentNetwork].donationAmount)}
-                    getTransactionReceipt(multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked, options))
+                    getTransactionReceipt(await multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked, options))
                 } else {
-                    getTransactionReceipt(multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked))
+                    getTransactionReceipt(await multisendContract.sendDifferentValue(tokenAddress, _addressArr, _amountArr, isChecked))
                 }
             } else {
                 if (isChecked) {
                     const options = {value: ethers.utils.parseEther(network[currentNetwork].donationAmount)}
-                    getTransactionReceipt(multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()), isChecked, options))
+                    getTransactionReceipt(await multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()), isChecked, options))
                 } else {
-                    getTransactionReceipt(multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()), isChecked))
+                    getTransactionReceipt(await multisendContract.sendSameValue(tokenAddress, addresses, ethers.utils.parseEther((amount).toString()), isChecked))
                 }
             }
             setTimeout(() => {
@@ -358,6 +376,14 @@ export default function Confirm() {
             })
         } catch(err) {
             console.log(err)
+            toast({
+                toastID,
+                title: 'Error',
+                description: err.data.message,
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            })
         } finally {
             setTimeout(() => {
                 setIsLoading(false)
@@ -410,10 +436,7 @@ export default function Confirm() {
             //connects with the contract
             const tokenContract = new ethers.Contract(tokenAddress, erc20_abi, signer);
             const _amount = ethers.utils.parseEther((((addresses.length*10*amount)/10).toString()))
-            getTransactionReceipt(tokenContract.approve(contractAddr, MAX))
-            setTimeout(() => {
-                setIsApproved(true)
-            }, 5000);
+            getApproveReceipt(await tokenContract.approve(contractAddr, MAX))
             toast({
                 toastID,
                 title: 'Approval Request Submitted',
@@ -424,6 +447,14 @@ export default function Confirm() {
             })
         } catch(err) {
             console.log(err)
+            toast({
+                toastID,
+                title: 'Error',
+                description: err.data.message,
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            })
         } finally {
             setTimeout(() => {
                 setIsLoading(false)
@@ -433,14 +464,14 @@ export default function Confirm() {
     return (
         <Container maxWidth='100%' minH='calc(100vh - 160px)' bg={bg} centerContent>
         <Box mt="0" px="24px"  rounded="xl" shadow="lg" bg={useColorModeValue("white", "gray.700")}
-                     w={{base: '80vw', lg: "768px"}} h="748px">
+                     w={{base: '80vw', lg: "768px"}} h="800px">
             <Button variant="ghost"  m="1" leftIcon={<ArrowBackIcon />} onClick={handleBackClick}>
                 Back
             </Button>
             <SimpleGrid columns={1} spacingY="16px">
                 <Box>
                     <Heading as="h2" size="md" my="2" align='center' color={useColorModeValue("gray.600", "gray.400")}>DETAILS</Heading>
-                <Box overflowY="auto" maxHeight="300px">
+                <Box overflowY="auto" maxHeight="224px">
                     <Table variant='simple' size="sm">
 
                 <Thead position="sticky" top={0} bg="gray.500">
@@ -459,15 +490,15 @@ export default function Confirm() {
                     <Heading as="h2" size="md" my="2" color={useColorModeValue("gray.600", "gray.400")}>SUMMARY</Heading>
                     {tokenAddress ?
                     <>
-                    <Heading as="h2" size="sm" my="2">
-                        Token Contract Address:
-                    </Heading>
-                    <chakra.h2>
-                        <Link href={"https://testnet.bscscan.com/address/"+tokenAddress} isExternal>
-                        {tokenAddress.substring(0, 5)+"..."+tokenAddress.substring(36, 42)}
-                        </Link>
-                        <ExternalLinkIcon ml="1"/>
-                    </chakra.h2>
+                    {/*<Heading as="h2" size="sm" my="2">*/}
+                    {/*    Token Contract Address:*/}
+                    {/*</Heading>*/}
+                    {/*<chakra.h2>*/}
+                    {/*    <Link href={"https://testnet.bscscan.com/address/"+tokenAddress} isExternal>*/}
+                    {/*    {tokenAddress.substring(0, 5)+"..."+tokenAddress.substring(36, 42)}*/}
+                    {/*    </Link>*/}
+                    {/*    <ExternalLinkIcon ml="1"/>*/}
+                    {/*</chakra.h2>*/}
                     </>
                     :
                     <></>
@@ -496,7 +527,7 @@ export default function Confirm() {
                                 Est. Total Transaction Cost
                                 </Center>
                                 <Center>
-                                    {contractGas ? contractGas + ' ' + network[currentNetwork].gasToken : "approve first"}
+                                    {contractGas ? contractGas + ' ' + network[currentNetwork].gasToken : "need approve"}
                                 </Center>
                             </Box>
                             <Box rounded="xl" bg='brand.200' height='80px' p="4">
@@ -504,7 +535,7 @@ export default function Confirm() {
                                 Avg. Cost Per Address
                                 </Center>
                                 <Center>
-                                    {avgGas ? avgGas + ' ' + network[currentNetwork].gasToken : "approve first"}
+                                    {avgGas ? avgGas + ' ' + network[currentNetwork].gasToken : "need approve"}
                                 </Center>
                             </Box>
                         </>
@@ -515,7 +546,7 @@ export default function Confirm() {
                                 Est. Total Transaction Cost
                                 </Center>
                                 <Center>
-                                    {contractGas ? contractGas + ' ' + network[currentNetwork].gasToken : "approve first"}
+                                    {contractGas ? contractGas + ' ' + network[currentNetwork].gasToken : "need approve"}
                                 </Center>
                             </Box>
                             <Box rounded="xl" bg='brand.200' height='80px' p="4">
@@ -523,7 +554,7 @@ export default function Confirm() {
                                 Avg. Cost Per Address
                                 </Center>
                                 <Center>
-                                    {avgGas ? avgGas + ' ' + network[currentNetwork].gasToken : "approve first"}
+                                    {avgGas ? avgGas + ' ' + network[currentNetwork].gasToken : "need approve"}
                                 </Center>
                             </Box>
                         </>

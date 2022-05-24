@@ -3,6 +3,13 @@ import React from "react";
 
 
 export const network = {
+    1: {
+        network: "Ethereum",
+        gasToken: "ETH",
+        contract: "0xAC762e706Cf670c6d7576B24Ca240912EC3dEE9D",
+        donation: " 0.001 ETH ",
+        donationAmount: "0.001",
+    },
     3: {
         network: "Ropsten",
         gasToken: "ETH",

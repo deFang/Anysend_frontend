@@ -37,37 +37,37 @@ export default function SupportedNetworks() {
             </chakra.p>
             <Stack direction={'row'} spacing={8}>
             <Link href="https://www.binance.com/en" isExternal>
-                <Image mt="4" h="40px" src={ETHLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={ETHLogo}/>
             </Link>
             <Link href="https://www.binance.com/en" isExternal>
-                <Image mt="4" h="40px" src={ArbitrumLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={ArbitrumLogo}/>
             </Link>
             <Link href="https://www.binance.com/en" isExternal>
-                <Image mt="4" h="40px" src={OptimismLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={OptimismLogo}/>
             </Link>
             <Link href="https://www.binance.com/en" isExternal>
-                <Image mt="4" h="40px" src={BNBLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={BNBLogo}/>
             </Link>
             <Link href="https://www.binance.com/en" isExternal>
-                <Image mt="4" h="40px" src={AvalancheLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={AvalancheLogo}/>
             </Link>
             <Link href="https://www.binance.com/en" isExternal>
-                <Image mt="4" h="40px" src={PolygonLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={PolygonLogo}/>
             </Link>
             <Link href="https://www.binance.com/en" isExternal>
-                <Image mt="4" h="40px" src={AuroraLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={AuroraLogo}/>
             </Link>
             <Link href="https://www.hecochain.com/en-us/" isExternal>
-                <Image mt="4" h="40px" src={HECOLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={HECOLogo}/>
             </Link>
             <Link href="https://www.hecochain.com/en-us/" isExternal>
-                <Image mt="4" h="40px" src={MoonbeamLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={MoonbeamLogo}/>
             </Link>
             <Link href="https://www.hecochain.com/en-us/" isExternal>
-                <Image mt="4" h="40px" src={FantomLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={FantomLogo}/>
             </Link>
             <Link href="https://www.hecochain.com/en-us/" isExternal>
-                <Image mt="4" h="40px" src={HarmonyLogo}/>
+                <Image mt="4" h="40px" minW="40px" src={HarmonyLogo}/>
             </Link>
             </Stack>
         </Container>

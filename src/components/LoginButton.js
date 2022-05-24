@@ -87,7 +87,7 @@ export default function LoginButton() {
               :
               network[currentNetwork].network=== 'Avalanche' ? AvalancheLogo
               : ETHLogo) : ETHLogo
-            } h="15px" mr="2"/>
+            } h="20px" mr="2"/>
             {currentAccount.substring(0, 5)+"...."+currentAccount.substring(currentAccount.length-6)}
           </Button>
           /*
