@@ -6,7 +6,7 @@ repo=./anysend_deployment
 
 if [ ! -d $repo ]; then
   printf '\e[1;34m%-6s\e[m\n' "app repo is not exit ,clone it from git@github.com:deri-protocol/deri.fi.git"
-  git clone git@github.com:Anysender/anysend_deployment.git $repo -b master
+  git clone git@github.com:deFang/anysend_deployment.git $repo -b master
 fi
 
 

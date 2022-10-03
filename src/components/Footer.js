@@ -4,7 +4,7 @@ import {
     Flex, Image, Divider
   } from '@chakra-ui/react';
 import { SimpleGrid } from '@chakra-ui/react'
-import { FaInstagram, FaTwitter, FaYoutube, FaDiscord, FaTelegramPlane, FaGithub } from 'react-icons/fa';
+import { FaTwitter, FaWeibo, FaDiscord, FaTelegramPlane, FaGithub } from 'react-icons/fa';
 import Logo from "assets/logo.png";
 import React from "react";
 
@@ -38,13 +38,17 @@ const SocialButton = ({
   
 export default function Footer() {
   return (
+      <Container maxW='100%' bg={useColorModeValue("#E5E5E5", "gray.800")} centerContent>
+
     <Box
       bg={useColorModeValue('light_background', 'dark_background')}
       color={useColorModeValue('gray.700', 'gray.200')}
       minH="80px"
+      w={{base: '80vw', lg: "768px"}}
+      py={4}
       >
       <Divider />
-      <SimpleGrid columns={3} spacing={10} py='16px' px='16px'>
+      <SimpleGrid columns={3} spacing={10} py='16px'>
         <Box >
           <Flex justify={'left'}>
           <chakra.a
@@ -60,29 +64,24 @@ export default function Footer() {
           </chakra.a>
         </Flex>
         </Box>
-        <Box align={'center'}>
-          <Text>© 2022 AnySend. All rights reserved</Text>
+        <Box align={'center'} py={"8px"} fontSize={"0.7rem"}>
+          <Text>A product crafted by Dzerohash</Text>
         </Box>
         <Box align={'center'}>
           <Stack direction={'row'} spacing={6} justify={'right'}>
-          <SocialButton label={'Twitter'} href={'https://twitter.com/anysend_pro'}>
+          <SocialButton label={'Twitter'} href={'https://twitter.com/Dzerohash'}>
             <FaTwitter />
           </SocialButton>
-          <SocialButton label={'Github'} href={'https://github.com/Anysender'}>
+          <SocialButton label={'Weibo'} href={'https://weibo.com/6989957363'}>
+            <FaWeibo />
+          </SocialButton>
+          <SocialButton label={'Github'} href={'https://github.com/deFang/anysend-contracts'}>
             <FaGithub />
-          </SocialButton>
-          {/*<SocialButton label={'Instagram'} href={'#'}>*/}
-          {/*  <FaInstagram />*/}
-          {/*</SocialButton>*/}
-          <SocialButton label={'Discord'} href={'https://discord.gg/xmKww5zAXw'}>
-            <FaDiscord />
-          </SocialButton>
-          <SocialButton label={'Telegram'} href={'https://t.me/anysend_pro'}>
-            <FaTelegramPlane />
           </SocialButton>
         </Stack>
         </Box>
       </SimpleGrid>
     </Box>
+      </Container>
   );
 }

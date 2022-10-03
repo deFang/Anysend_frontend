@@ -37,7 +37,7 @@ export default function FAQs() {
             </AccordionButton>
           </h2>
           <AccordionPanel pb={4} w="748px">
-            Anysend does one thing: Send ether and ethereum tokens to multiple addresses with a single transaction. Simply type in addresses or upload csv files to start.
+            Anysend does one thing: Send ethereum and EVM-compatible tokens to multiple addresses within a single transaction. Simply type in addresses or upload csv files to start.
           </AccordionPanel>
         </AccordionItem>
 

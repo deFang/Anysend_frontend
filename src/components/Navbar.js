@@ -33,11 +33,10 @@ export default function Navbar() {
         <AlertDescription>Please switch to supported networks.</AlertDescription>
       </Alert>
       }
-      
+      <Container maxW='100%' bg={bg} centerContent>
       <chakra.header
         bg={bg}
-        w="full"
-        px={{ base: 2, sm: 4 }}
+        w={{base: '80vw', lg: "768px"}}
         py={4}
       >
         <Flex alignItems="center" justifyContent="space-between" mx="auto">
@@ -105,6 +104,7 @@ export default function Navbar() {
           </HStack>
         </Flex>
       </chakra.header>
+      </Container>
       </>
   );
 }
